@@ -25,7 +25,7 @@ variable "vpc_endpoints" {
       #  - "iam_policy"=<string> - either the name of the iam policy or the ID
       #  - "iam_policy_file"=<path> - read in a JSON file of an IAM policy
       #  - "tags" - tags for this VPC endpoint
-      options             = map
+      options             = map(string)
     })
   )
 }
