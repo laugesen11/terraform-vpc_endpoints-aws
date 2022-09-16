@@ -51,7 +51,7 @@ locals {
       "security_group_ids"  = lookup(item.options,"security_groups",null) == null ? null : [for security_group in split(",",item.options["security_groups"]): lookup(var.security_groups,security_group,null) != null ? var.security_groups[security_group].id : security_group ]
 
       #Subnet IDs are only allowed for Interface and GatewayLoadBalancer type VPC Endpoints
-      "subnet_ids" = lower(lookup(item.options,"vpc_endpoint_type","Gateway")) != "gateway" && lookup(item.options,"subnets",null) != null ? [for subnet in split(",",item.options["subnets"]) : lookup(module.vpcs,item.vpc,null) == null ? subnet : (lookup(module.vpcs[item.vpc_name].subnets,subnet,null) != null ? module.vpcs[item.vpc_name].subnets[subnet].id) : subnet ] : null
+      "subnet_ids" = lower(lookup(item.options,"vpc_endpoint_type","Gateway")) != "gateway" && lookup(item.options,"subnets",null) != null ? [for subnet in split(",",item.options["subnets"]) : lookup(module.vpcs,item.vpc,null) == null ? subnet : (lookup(module.vpcs[item.vpc_name].subnets,subnet,null) != null ? module.vpcs[item.vpc_name].subnets[subnet].id : subnet) ] : null
     }
   }
 }
