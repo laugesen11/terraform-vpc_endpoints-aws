@@ -31,7 +31,7 @@ locals {
     for item in var.vpc_endpoints: item.name => {
       "service_name"        = item.service_name
       #See if we have an entry in the VPC module for the value of 'vpc_name_or_id'. If not, we assume this is the VPC ID itself
-      "vpc_id"              = lookup(var.vpcs,item.vpc,item.vpc) 
+      "vpc_id"              = lookup(var.vpcs,item.vpc,null) != null ? var.vpcs[item.vpc].vpc.id : item.vpc 
       "auto_accept"         = lookup(item.options,"auto_accept",false)
       #Can only set this for endpoints of type "Gateway"
       "private_dns_enabled" = lower(lookup(item.options,"vpc_endpoint_type","Gateway")) == "interface" ? lookup(item.options,"private_dns_enabled",false) : null
@@ -40,7 +40,6 @@ locals {
       #We read in the IAM policy created locally here, or we get the IAM policy requested
       #Will add ability to resolve IAM policies from module once available
       "policy"              = lookup(aws_iam_policy.iam_policies_from_files,item.name,null) != null ? aws_iam_policy.iam_policies_from_files[item.name].id : lookup(item.options,"iam_policy",null)
-   #   "ip_address_type"     = lookup(item.options,"ip_address_type",null)
  
       "tags"                = lookup(item.options,"tags",null) == null ? {} : {
                                 for tag in split(",",item.options["tags"]):
@@ -68,6 +67,5 @@ resource "aws_vpc_endpoint" "vpc_endpoints" {
   subnet_ids          = each.value.subnet_ids
   route_table_ids     = each.value.route_table_ids
   policy              = each.value.policy
-  #ip_address_type     = each.value.ip_address_type
   tags                = merge({"Name" = each.key},each.value.tags)
 }
