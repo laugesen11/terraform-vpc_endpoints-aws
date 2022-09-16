@@ -40,7 +40,7 @@ locals {
       #We read in the IAM policy created locally here, or we get the IAM policy requested
       #Will add ability to resolve IAM policies from module once available
       "policy"              = lookup(aws_iam_policy.iam_policies_from_files,item.name,null) != null ? aws_iam_policy.iam_policies_from_files[item.name].id : lookup(item.options,"iam_policy",null)
-      "ip_address_type"     = lookup(item.options,"ip_address_type",null)
+   #   "ip_address_type"     = lookup(item.options,"ip_address_type",null)
  
       "tags"                = lookup(item.options,"tags",null) == null ? {} : {
                                 for tag in split(",",item.options["tags"]):
@@ -68,6 +68,6 @@ resource "aws_vpc_endpoint" "vpc_endpoints" {
   subnet_ids          = each.value.subnet_ids
   route_table_ids     = each.value.route_table_ids
   policy              = each.value.policy
-  ip_address_type     = each.value.ip_address_type
+  #ip_address_type     = each.value.ip_address_type
   tags                = merge({"Name" = each.key},each.value.tags)
 }
