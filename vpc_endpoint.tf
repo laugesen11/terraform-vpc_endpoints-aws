@@ -69,5 +69,5 @@ resource "aws_vpc_endpoint" "vpc_endpoints" {
   route_table_ids     = each.value.route_table_ids
   policy              = each.value.policy
   ip_address_type     = each.value.ip_address_type
-  tags                = merge({"Name" = item.name},each.value.tags)
+  tags                = merge({"Name" = each.key},each.value.tags)
 }
