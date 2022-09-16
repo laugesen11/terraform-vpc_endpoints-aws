@@ -31,7 +31,7 @@ locals {
     for item in var.vpc_endpoints: item.name => {
       "service_name"        = item.service_name
       #See if we have an entry in the VPC module for the value of 'vpc_name_or_id'. If not, we assume this is the VPC ID itself
-      "vpc_id"              = lookup(module.vpcs,item.vpc,item.vpc) 
+      "vpc_id"              = lookup(var.vpcs,item.vpc,item.vpc) 
       "auto_accept"         = lookup(item.options,"auto_accept",false)
       #Can only set this for endpoints of type "Gateway"
       "private_dns_enabled" = lower(lookup(item.options,"vpc_endpoint_type","Gateway")) == "interface" ? lookup(item.options,"private_dns_enabled",false) : null
@@ -51,7 +51,7 @@ locals {
       "security_group_ids"  = lookup(item.options,"security_groups",null) == null ? null : [for security_group in split(",",item.options["security_groups"]): lookup(var.security_groups,security_group,null) != null ? var.security_groups[security_group].id : security_group ]
 
       #Subnet IDs are only allowed for Interface and GatewayLoadBalancer type VPC Endpoints
-      "subnet_ids" = lower(lookup(item.options,"vpc_endpoint_type","Gateway")) != "gateway" && lookup(item.options,"subnets",null) != null ? [for subnet in split(",",item.options["subnets"]) : lookup(module.vpcs,item.vpc,null) == null ? subnet : (lookup(module.vpcs[item.vpc_name].subnets,subnet,null) != null ? module.vpcs[item.vpc_name].subnets[subnet].id : subnet) ] : null
+      "subnet_ids" = lower(lookup(item.options,"vpc_endpoint_type","Gateway")) != "gateway" && lookup(item.options,"subnets",null) != null ? [for subnet in split(",",item.options["subnets"]) : lookup(var.vpcs,item.vpc,null) == null ? subnet : (lookup(var.vpcs[item.vpc_name].subnets,subnet,null) != null ? var.vpcs[item.vpc_name].subnets[subnet].id : subnet) ] : null
     }
   }
 }
